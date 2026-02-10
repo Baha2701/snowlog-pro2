@@ -7,8 +7,8 @@ import { Filter } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const handleLogout = async () => {
-  await supabase.auth.signOut();
-  window.location.reload();
+ await supabase.auth.signOut();
+window.location.href = "/login";
 };
 const { records, getStats } = useSnow();
   
@@ -34,16 +34,15 @@ const { records, getStats } = useSnow();
   ];
 
   return (
-    <div className="flex justify-end mb-4">
+      <div className="max-w-6xl mx-auto pb-24 space-y-6">
+  <div className="flex justify-end mb-4">
   <button
     onClick={handleLogout}
     className="bg-red-500 text-white px-4 py-2 rounded"
   >
     Выйти
   </button>
-</div>
-<div className="max-w-6xl mx-auto pb-24 space-y-6">
-      
+</div>  
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-end gap-4">
         <div className="flex items-center gap-2 mb-2 md:mb-0">
