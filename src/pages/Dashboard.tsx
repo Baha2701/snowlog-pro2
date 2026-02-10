@@ -1,3 +1,4 @@
+import { supabase } from "../utils/supabase";
 import React, { useState, useMemo } from 'react';
 import { useSnow } from '../context/SnowContext';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts';
@@ -5,7 +6,11 @@ import { formatNumber } from '../utils/formatters';
 import { Filter } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
-  const { records, getStats } = useSnow();
+  const handleLogout = async () => {
+  await supabase.auth.signOut();
+  window.location.reload();
+};
+const { records, getStats } = useSnow();
   
   // Default to current month
   const now = new Date();
@@ -29,7 +34,15 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto pb-24 space-y-6">
+    <div className="flex justify-end mb-4">
+  <button
+    onClick={handleLogout}
+    className="bg-red-500 text-white px-4 py-2 rounded"
+  >
+    Выйти
+  </button>
+</div>
+<div className="max-w-6xl mx-auto pb-24 space-y-6">
       
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-end gap-4">
