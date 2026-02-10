@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from "react";
+import { supabase } from "./utils/supabase";
 import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { SnowProvider } from './context/SnowContext';
 import EntryForm from './pages/EntryForm';
 import Log from './pages/Log';
 import Dashboard from './pages/Dashboard';
+import Login from "./pages/Login";
 import { PenTool, Table, BarChart3, Snowflake } from 'lucide-react';
 
 const NavLink: React.FC<{ to: string; icon: React.ReactNode; label: string }> = ({ to, icon, label }) => {
@@ -36,8 +39,36 @@ const HeaderLink: React.FC<{ to: string; label: string }> = ({ to, label }) => {
   )
 }
 
-const AppContent: React.FC = () => {
-  return (
+ const AppContent: React.FC = () => {
+
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setLoading(false);
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+    });
+
+    return () => {
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  if (loading) {
+    return <div className="p-6">Загрузка...</div>;
+  }
+
+  if (!session) {
+    return <Login />;
+  }
+
+  // дальше идёт твой старый код (header / routes / return ...)
+ return (
     <div className="min-h-screen bg-slate-50 font-sans">
       {/* Top Bar (Desktop) */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
@@ -60,6 +91,7 @@ const AppContent: React.FC = () => {
       {/* Main Content */}
       <main className="p-4 md:p-8">
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<EntryForm />} />
           <Route path="/log" element={<Log />} />
           <Route path="/dashboard" element={<Dashboard />} />
